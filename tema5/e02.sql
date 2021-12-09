@@ -30,6 +30,11 @@ FROM shippers JOIN orders ON(shipper_id=ship_via)
 WHERE shippers.company_name ILIKE 'United Package'
 GROUP BY contact_name;
 
+SELECT DISTINCT c.company_name
+FROM customers c JOIN orders o USING(customer_id)
+		JOIN shippers s ON(shipper_id=ship_via)
+WHERE c.customer_id
+
 
 
 
