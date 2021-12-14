@@ -3,10 +3,11 @@ FROM comprador JOIN operacion USING(id_cliente)
 		JOIN inmueble USING(id_inmueble)
 		JOIN tipo ON(tipo_inmueble=id_tipo)
 WHERE provincia ILIKE 'Almería'
-  AND precio_final < (
+  AND precio_final > (
 	  SELECT AVG(precio)
 	  FROM inmueble JOIN tipo ON(tipo_inmueble=id_tipo)
 	  WHERE tipo.nombre ILIKE 'Casa'
+	    AND provincia ILIKE 'Almería'
   				)
   AND tipo.nombre ILIKE 'Casa';
 

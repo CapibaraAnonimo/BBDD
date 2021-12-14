@@ -15,6 +15,13 @@ HAVING COUNT(nombre) <= (
 						)
 ORDER BY trafico DESC;
 
+--Correccion
+SELECT nombre, ciudad, count(id_reserva)
+FROM reserva JOIN vuelo USING(id_vuelo)
+		JOIN aeropuerto ON(hasta=id_aeropuerto)
+WHERE EXTRACT(MONTH FROM llegada) IN (1, 2, 3)
+GROUP BY nombre;
+
 
 SELECT a1.nombre "desde", a2.nombre "hasta", llegada - salida
 FROM vuelo JOIN aeropuerto a1 ON(desde=a1.id_aeropuerto)
