@@ -42,11 +42,13 @@ SELECT t1.nombre, comprador.nombre, provincia, fecha_operacion, precio_final
 FROM operacion JOIN inmueble i1 USING(id_inmueble)
 		JOIN tipo t1 ON(tipo_inmueble=id_tipo)
 		JOIN comprador USING(id_cliente)
-WHERE precio_final <= ALL (
+WHERE tipo_operacion ILIKE 'venta'
+  AND precio_final <= ALL (
 							SELECT precio_final
 							FROM operacion JOIN inmueble i1 USING(id_inmueble)
 									JOIN tipo t2 ON(tipo_inmueble=id_tipo)
 							WHERE t1.nombre = t2.nombre
+	  						  AND tipo_operacion ILIKE 'venta'
 							);
 							
 
@@ -61,6 +63,7 @@ WHERE provincia ILIKE 'Sevilla'
 	  					SELECT id_cliente
 	  					FROM operacion
 	  					WHERE TO_CHAR(fecha_operacion, 'ID') NOT IN ('6', '7')
+	  					  AND tipo_operacion ILIKE 'venta'
   						);
 
 
