@@ -6,9 +6,9 @@ DROP TABLE editorial;
 DROP TABLE genero;
 
 CREATE TABLE autor (
-	dni 			char(9) PRIMARY KEY,
+	dni 			varchar(9) PRIMARY KEY,
 	nombre			text NOT NULL,
-	Nacionalidad	char(56)
+	Nacionalidad	varchar(56)
 );
 
 CREATE TABLE genero (
@@ -25,7 +25,7 @@ CREATE TABLE editorial (
 );
 
 CREATE TABLE libro (
-	isbn			char(17) PRIMARY KEY,
+	isbn			varchar(17) PRIMARY KEY,
 	titulo			text NOT NULL,
 	dni_autor		char(9) NOT NULL REFERENCES autor,
 	cod_genero		smallint NOT NULL REFERENCES genero,
