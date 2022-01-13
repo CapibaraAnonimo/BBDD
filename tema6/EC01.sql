@@ -39,6 +39,15 @@ CREATE TABLE libro (
 	CONSTRAINT fk_editorial FOREIGN KEY (cod_editorial) REFERENCES editorial ON DELETE NO ACTION 
 );
 
+ALTER TABLE libro DROP CONSTRAINT fk_autor;
+ALTER TABLE libro ADD CONSTRAINT fk_autor FOREIGN KEY (dni_autor) REFERENCES autor ON DELETE RESTRICT;
+
+ALTER TABLE libro DROP CONSTRAINT fk_genero;
+ALTER TABLE libro ADD CONSTRAINT fk_genero FOREIGN KEY (cod_genero) REFERENCES genero ON DELETE RESTRICT;
+
+ALTER TABLE libro DROP CONSTRAINT fk_editorial;
+ALTER TABLE libro ADD CONSTRAINT fk_editorial FOREIGN KEY (cod_editorial) REFERENCES editorial ON DELETE NO ACTION;
+
 CREATE TABLE edicion (
 	isbn				char(17),
 	fecha_publicacion	date,
@@ -47,3 +56,6 @@ CREATE TABLE edicion (
 	CONSTRAINT fk_libro FOREIGN KEY (isbn) REFERENCES libro ON DELETE RESTRICT,
 	CONSTRAINT cantidad_versiones CHECK (cantidad > 0)
 );
+
+ALTER TABLE edicion DROP CONSTRAINT fk_libro;
+ALTER TABLE edicion ADD CONSTRAINT fk_libro FOREIGN KEY (isbn) REFERENCES libro ON DELETE RESTRICT;
