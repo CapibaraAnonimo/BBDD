@@ -52,7 +52,7 @@ CONSTRAINT pk_reserva PRIMARY KEY (id_reserva)
 );
 
 CREATE TABLE comanda (
-	id_comanda			int ,
+	id_comanda			serial,
 	reserva				int NOT NULL,
 CONSTRAINT pk_comanda PRIMARY KEY (id_comanda)
 );
