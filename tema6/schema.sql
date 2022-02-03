@@ -1,0 +1,29 @@
+/*
+ Examen de la unidad didáctica 6
+ Bases de datos - 1º Desarrollo de Aplicaciones Multiplataforma
+ */
+
+CREATE TABLE venta (
+    ID_VENTA   SERIAL,
+    FECHA      DATE NOT NULL,
+    EMPLEADO   INTEGER NOT NULL,
+    CLIENTE    VARCHAR(10),
+    CONSTRAINT PK_VENTA PRIMARY KEY ( ID_VENTA )
+);
+
+
+CREATE TABLE producto (
+    CUP           SERIAL,
+    NOMBRE        VARCHAR(100) NOT NULL,
+    DESCRIPCION   TEXT,
+    PVP           NUMERIC(10,2) NOT NULL,
+    CATEGORIA     INTEGER,
+    CONSTRAINT PK_PRODUCTO PRIMARY KEY ( CUP )
+);
+
+CREATE TABLE categoria (
+    ID_CATEGORIA   SERIAL,
+    NOMBRE         VARCHAR(100) NOT NULL,
+    DESCRIPCION    TEXT,
+    CONSTRAINT PK_CATEGORIA PRIMARY KEY ( ID_CATEGORIA )
+);
