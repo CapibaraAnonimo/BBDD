@@ -15,12 +15,124 @@ ORDER BY suma DESC
 LIMIT 1;
 
 
---2. PARA DESCARTAR PROVEEDORES NO APTOS DE NUESTRA BD, HEMOS DE TENER UN
---LISTADO DE CUALES LO SON. SE CONSIDERA QUE UN PROVEEDOR ES APTO SI EL
---PROMEDIO DE PRODUCTOS QUE HA SURTIDO ES SUPERIOR AL PROMEDIO TOTAL.
+--2. Para tener control sobre la tendencia de provisionamiento (en cuanto a unidades se refiere) de los proveedores y 
+--poder descartar aquellos que no son aptos, hemos de tener un listado de los que si lo son. Se considera que un 
+--proveedor es acto si el promedio de unidades que ha proporcionado es superior al promedio total de unidades vendidas.
 
 
+WITH sumaSupplier AS(
+	SELECT SUM(quantity) "ventas", supplier_id
+	FROM order_details JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY supplier_id
+),
+promedio AS(
+	SELECT AVG(ventas)
+	FROM sumaSupplier
+)
+SELECT company_name, ventas
+FROM suppliers JOIN sumaSupplier USING(supplier_id)
+WHERE ventas > (SELECT * FROM promedio);
 
 
+--2.1
 
+WITH promedio AS(
+	SELECT ROUND(AVG(quantity), 0) "suma", company_name
+	FROM order_details JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY company_name
+	ORDER BY AVG(quantity)
+)
+SELECT company_name
+FROM promedio JOIN suppliers USING(company_name)
+WHERE suma > (SELECT ROUND(AVG(suma), 0) FROM promedio);
+
+--3. Para tener control sobre los beneficios de los proveedores y poder asi descartar aquellos no aptos, hemos de 
+--tener un listado de los que son aptos. Se considera que un proveedor es acto  lasventas obtenidas por el mismo es 
+--inferior al 2% de las ventas totales
+
+WITH producido AS(
+	SELECT SUM((unit_price*quantity) * (1-discount)) "total"
+	FROM order_details
+),
+producidoEmpresa AS(
+	SELECT SUM((o1.unit_price*quantity) * (1-discount)) "suma", supplier_id
+	FROM order_details o1 JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY supplier_id
+)
+SELECT company_name
+FROM producidoEmpresa JOIN suppliers USING(supplier_id)
+WHERE suma < (SELECT (total * 0.02) FROM producido);
+
+
+--4. Queremos saber que proveedores son aptos en cuanto a provisionamiento de unidades así como en cuanto a beneficio 
+--obtenido
+
+WITH sumaSupplier AS(
+	SELECT SUM(quantity) "ventas", supplier_id
+	FROM order_details JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY supplier_id
+),
+promedio AS(
+	SELECT AVG(ventas)
+	FROM sumaSupplier
+),
+lista1 AS (
+	SELECT company_name, ventas
+	FROM suppliers JOIN sumaSupplier USING(supplier_id)
+	WHERE ventas > (SELECT * FROM promedio)
+),
+producido AS(
+	SELECT SUM((unit_price*quantity) * (1-discount)) "total"
+	FROM order_details
+),
+producidoEmpresa AS(
+	SELECT SUM((o1.unit_price*quantity) * (1-discount)) "suma", supplier_id
+	FROM order_details o1 JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY supplier_id
+),
+lista2 AS(
+	SELECT company_name
+	FROM producidoEmpresa JOIN suppliers USING(supplier_id)
+	WHERE suma < (SELECT (total * 0.02) FROM producido)
+)
+SELECT *
+FROM lista1 JOIN lista2 USING(company_name);
+
+
+--4.2
+
+WITH promedio AS(
+	SELECT ROUND(AVG(quantity), 0) "suma", company_name
+	FROM order_details JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY company_name
+	ORDER BY AVG(quantity)
+),
+lista1 AS(
+	SELECT company_name
+	FROM promedio JOIN suppliers USING(company_name)
+	WHERE suma > (SELECT ROUND(AVG(suma), 0) FROM promedio)
+),
+producido AS(
+	SELECT SUM((unit_price*quantity) * (1-discount)) "total"
+	FROM order_details
+),
+producidoEmpresa AS(
+	SELECT SUM((o1.unit_price*quantity) * (1-discount)) "suma", supplier_id
+	FROM order_details o1 JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY supplier_id
+),
+lista2 AS(
+	SELECT company_name
+	FROM producidoEmpresa JOIN suppliers USING(supplier_id)
+	WHERE suma < (SELECT (total * 0.02) FROM producido)
+)
+SELECT *
+FROM lista1 JOIN lista2 USING(company_name);
 
