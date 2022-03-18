@@ -6,7 +6,7 @@ WITH promedio AS(
 	FROM order_details JOIN products USING(product_id)
 		JOIN suppliers USING(supplier_id)
 	GROUP BY company_name
-	ORDER BY AVG(quantity)
+	ORDER BY AVG(quantity) ASC
 	LIMIT 2
 )
 SELECT *
@@ -53,11 +53,11 @@ WHERE suma > (SELECT ROUND(AVG(suma), 0) FROM promedio);
 --inferior al 2% de las ventas totales
 
 WITH producido AS(
-	SELECT SUM((unit_price*quantity) * (1-discount)) "total"
+	SELECT SUM((unit_price*quantity)) "total"
 	FROM order_details
 ),
 producidoEmpresa AS(
-	SELECT SUM((o1.unit_price*quantity) * (1-discount)) "suma", supplier_id
+	SELECT SUM((o1.unit_price*quantity)) "suma", supplier_id
 	FROM order_details o1 JOIN products USING(product_id)
 		JOIN suppliers USING(supplier_id)
 	GROUP BY supplier_id
@@ -135,4 +135,26 @@ lista2 AS(
 )
 SELECT *
 FROM lista1 JOIN lista2 USING(company_name);
+
+
+--5. Queremos un listado de los proveedores y de la variedad de productos provistos por los mismos, cuyos precios 
+--sobrepasan el promedio del precio de los productos provistos por dicho proveedor en dichas categorias
+
+WITH productos AS(
+	SELECT DISTINCT(product_id) "producto", company_name
+	FROM order_details JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY company_name, product_id
+	ORDER BY company_name
+),
+categorias AS(
+	SELECT AVG(unit_price) "precio", category_id
+	FROM products JOIN categories USING(category_id)
+	GROUP BY category_id
+)
+SELECT producto, company_name
+FROM productos JOIN products ON(producto=product_id)
+	JOIN categories c1 USING(category_id)
+WHERE unit_price > (SELECT precio FROM categorias c2 WHERE c1.category_id = c2.category_id);
+
 
