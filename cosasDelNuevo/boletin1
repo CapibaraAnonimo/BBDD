@@ -158,3 +158,30 @@ FROM productos JOIN products ON(producto=product_id)
 WHERE unit_price > (SELECT precio FROM categorias c2 WHERE c1.category_id = c2.category_id);
 
 
+--6. Queremos potenciar las ventas de aquellas categorias de productos menos demandadas. Para ello necesitamos tener 
+--un listado por categorias y fecha del numero de productos vendidos
+
+
+SELECT SUM(quantity), product_name, order_date
+FROM order_details JOIN products USING(product_id)
+	JOIN orders USING(order_id)
+GROUP BY product_id, product_name, order_date;
+
+
+
+--7. Listado de empresas de mensajeria que han cubierto cada región
+
+SELECT *
+FROM orders JOIN shippers ON(ship_via=shipper_id)
+	JOIN order_details USING(order_id)
+	JOIN products USING(product_id)
+	JOIN suppliers USING(supplier_id)
+	
+SELECT *
+FROM us_states JOIN orders ON(state_abbr=ship_city)
+
+SELECT *				--paso de esta cosa, es una mierda
+FROM orders
+
+
+
