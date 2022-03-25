@@ -77,16 +77,28 @@ FROM e02_4('Gula Malacca');
 
 
 
-CREATE OR REPLACE FUNCTION e02_5()
+CREATE OR REPLACE FUNCTION e02_5(cliente text)
 RETURNS TABLE(
-	cliente text
+	transportista numeric,
+	customer text
 ) AS
 $$
-	SELECT *
+	SELECT DISTINCT(shipper_id) "id", customer_id "customer_id"
 	FROM shippers JOIN orders ON(shipper_id=ship_via)
 		JOIN customers USING(customer_id)
+	WHERE customer_id = $1
 $$
 LANGUAGE sql
+
+
+with cliente1 AS(
+	SELECT DISTINCT(customer)
+	FROM orders o JOIN e02_5(customer_id) ON(customer_id = customer)
+	WHERE 1 = (SELECT COUNT(transportista) FROM e02_5(customer_id))
+)
+SELECT company_name
+FROM cliente1 JOIN customers ON(customer = customer_id)
+WHERE 2 = ALL(SELECT transportista FROM e02_5(customer))
 
 
 
