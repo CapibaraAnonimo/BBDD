@@ -55,5 +55,16 @@ rentar AS(
 SELECT first_name
 FROM empezar JOIN rentar USING(employee_id)
 	JOIN employees USING(employee_id);
+	
+
+/*19.Queremos un listado del promedio de días disponibles para entregar un pedido, agrupando por categoria y 
+producto*/
+
+SELECT AVG(age(required_date, order_date)), product_name, category_name
+FROM orders JOIN order_details USING(order_id)
+	JOIN products USING(product_id)
+	JOIN categories USING(category_id)
+GROUP BY category_name, product_name
+ORDER BY category_name, product_name
 
 
