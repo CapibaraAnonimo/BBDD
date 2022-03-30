@@ -65,6 +65,17 @@ FROM orders JOIN order_details USING(order_id)
 	JOIN products USING(product_id)
 	JOIN categories USING(category_id)
 GROUP BY category_name, product_name
-ORDER BY category_name, product_name
+ORDER BY category_name, product_name;
+
+
+/*21.Queremos un listado del numero de pedidos por fecha para aquellos pedidos de productos 
+nacionales destinados al extranjero*/
+
+SELECT COUNT(*), order_date
+FROM orders JOIN order_details USING(order_id) 
+	JOIN products USING(product_id)
+	JOIN suppliers USING(supplier_id)
+WHERE country ILIKE 'Spain' AND ship_country NOT ILIKE 'Spain'
+GROUP BY order_date;
 
 
