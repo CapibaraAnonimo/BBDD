@@ -102,5 +102,43 @@ WHERE 2 = ALL(SELECT transportista FROM e02_5(customer))
 
 
 
+/*6.Queremos saber cual es el proveedor que ha proporcionado ,en promedio, más productos que el proveedor
+que en promedio ha proporcionado menos productos*/
+
+CREATE OR REPLACE FUNCTION promedioPromediadoDePromediosProvistos(id_proveedor numeric)
+RETURNS TABLE(
+	promedio numeric,
+	nombre text
+)
+AS
+$$
+	SELECT AVG(quantity), company_name
+	FROM order_details JOIN products USING(product_id)
+		JOIN suppliers USING(supplier_id)
+	GROUP BY company_name
+$$
+LANGUAGE 'sql'
+
+SELECT nombre
+FROM suppliers JOIN promedioPromediadoDePromediosProvistos(supplier_id) ON(company_name = nombre)
+ORDER BY promedio
+OFFSET 1
+LIMIT 1;
+
+
+
+/*7.Para tener control sobre la tendencia de provisionamiento (en cuanto a unidades se refiere) de los proveedores y 
+poder descartar aquellos que no son aptos, hemos de tener un listado de los que si lo son. Se considera que un 
+proveedor es apto si el promedio de unidades que ha proporcionado es superior al promedio total de unidades vendidas*/
+
+
+CREATE OR REPLACE FUNCTION 
+
+
+
+
+
+
+
 
 
