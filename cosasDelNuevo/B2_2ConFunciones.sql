@@ -136,6 +136,15 @@ CREATE OR REPLACE FUNCTION
 
 
 
+/*8.Para tener control sobre los beneficios de los proveedores y poder asi descartar aquellos no aptos, hemos de 
+tener un listado de los que son aptos. Se considera que un proveedor es apto si las ventas obtenidas por el mismo es 
+inferior al 2% de las ventas totales*/
+
+
+CREATE OR REPLACE FUNCTION 
+
+
+
 
 
 
