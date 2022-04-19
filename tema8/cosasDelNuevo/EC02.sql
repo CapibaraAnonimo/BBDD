@@ -25,12 +25,13 @@ apartado anterior.*/
 
 CREATE OR REPLACE FUNCTION aeropuertoFecha(fechas date, lugar text)
 RETURNS TABLE(
+	idvuelo integer,
 	aeSalida text,
 	ciuSalida text,
-	feSalida date,
+	feSalida timestamp,
 	aeLlegada text,
 	ciuLlegada text,
-	feLlegada date,
+	feLlegada timestamp,
 	pasaMax numeric,
 	pasajeros numeric
 ) AS
@@ -40,7 +41,7 @@ $$
 		FROM reserva
 		GROUP BY id_vuelo
 	)
-	SELECT ae1.nombre, ae1.ciudad, salida, ae2.nombre, ae2.ciudad, salida, max_pasajeros, total
+	SELECT id_vuelo, ae1.nombre, ae1.ciudad, salida, ae2.nombre, ae2.ciudad, llegada, max_pasajeros, total
 	FROM vuelo JOIN reserva USING(id_vuelo)
 		JOIN pasajerosVuelo USING(id_vuelo)
 		JOIN aeropuerto ae1 ON(desde=ae1.id_aeropuerto)
@@ -51,7 +52,34 @@ $$
 $$
 LANGUAGE 'sql'
 
-SELECT * FROM aeropuertoFecha('27-06-2021', 'Ámsterdam');
+SELECT * FROM aeropuertoFecha('30-06-2021', 'Ámsterdam');
+
+
+
+/*3. En la misma base de datos, crea una función que nos permita crear un nuevo vuelo. Debe recibir como argumento: 
+ciudad de salida, ciudad de llegada, fecha y hora de salida, fecha y hora de llegada, precio y descuento. Debe 
+insertar una nueva fila en vuelo, obteniendo el ID de los aeropuertos a partir de sus nombres, y estableciendo un 
+avión aleatorio (puedes consultar cómo obtener una fila aleatoria de una tabla en este enlace: http://blog.jmacoe.com/
+gestion_ti/base_de_datos/sql-para-seleccionar-una-fila-aleatoriamente/ */
+
+
+CREATE OR REPLACE FUNCTION crearVuelo(ciudadSalida text, ciudadLlegada text, fechaSalida timestamp, 
+									  fechaLlegada timestamp, precio numeric, descuento numeric)
+RETURNS void AS
+$$
+	INSERT INTO vuelo VALUES((SELECT MAX(id_vuelo)+1 FROM vuelo), 
+							 (SELECT id_aeropuerto FROM aeropuerto WHERE ciudad ILIKE $1), 
+							 (SELECT id_aeropuerto FROM aeropuerto WHERE ciudad ILIKE $2), ($3), ($4), ($5), ($6), 
+							 (SELECT id_avion FROM avion ORDER BY RANDOM() LIMIT 1))
+$$
+LANGUAGE 'sql'
+
+SELECT * FROM crearVuelo('Sevilla', 'Ámsterdam', make_timestamp(2021, 06, 23, 6, 34, 0), 
+						 make_timestamp(2021, 06, 23, 8, 29, 0), 54, 32);
+SELECT *
+FROM vuelo
+ORDER BY id_vuelo DESC
+
 
 
 
